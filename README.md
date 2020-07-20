@@ -1,3 +1,12 @@
+# About this fork
+
+Vendored version of https://github.com/dashbitco/nimble_options for https://github.com/elixir-lsp/elixir-ls/ because of #115
+
+Instructions to update:
+* Interactive rebase on the latest nimble_options master dropping the commit that did the previous rename
+* Run `mix rename NimbleOptions NimbleOptionsVendored nimble_options nimble_options_vendored`
+* Force push to the `vendored` branch
+
 # NimbleOptionsVendored
 
 [Online Documentation](https://hexdocs.pm/nimble_options_vendored).
