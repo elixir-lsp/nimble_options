@@ -1,4 +1,4 @@
-defmodule NimbleOptions.ValidationError do
+defmodule NimbleOptionsVendored.ValidationError do
   @moduledoc """
   An error that is returned (or raised) when options are invalid.
 

@@ -1,6 +1,6 @@
-# NimbleOptions
+# NimbleOptionsVendored
 
-[Online Documentation](https://hexdocs.pm/nimble_options).
+[Online Documentation](https://hexdocs.pm/nimble_options_vendored).
 
 A tiny library for validating and documenting high-level options.
 
@@ -21,39 +21,39 @@ definition = [
 ]
 ```
 
-Now you can validate options through `NimbleOptions.validate/2`:
+Now you can validate options through `NimbleOptionsVendored.validate/2`:
 
 ```elixir
 options = [url: "https://example.com"]
 
-NimbleOptions.validate(options, definition)
+NimbleOptionsVendored.validate(options, definition)
 #=> {:ok, [url: "https://example.com", connections: 5]}
 ```
 
 If the options don't match the definition, an error is returned:
 
 ```elixir
-NimbleOptions.validate([connections: 3], definition)
+NimbleOptionsVendored.validate([connections: 3], definition)
 {:error,
- %NimbleOptions.ValidationError{
+ %NimbleOptionsVendored.ValidationError{
    keys_path: [],
    message: "required option :url not found, received options: [:connections]"
  }}
 ```
 
-`NimbleOptions` is also capable of automatically generating
-documentation for a definition by calling `NimbleOptions.docs/1`
+`NimbleOptionsVendored` is also capable of automatically generating
+documentation for a definition by calling `NimbleOptionsVendored.docs/1`
 with your definition.
 
 ## Installation
 
-You can install `nimble_options` by adding it to your list of
+You can install `nimble_options_vendored` by adding it to your list of
 dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:nimble_options, "~> 0.3.0"}
+    {:nimble_options_vendored, "~> 0.3.0"}
   ]
 end
 ```
@@ -63,7 +63,7 @@ end
 All nimble libraries by Dashbit:
 
   * [NimbleCSV](https://github.com/dashbitco/nimble_csv) - simple and fast CSV parsing
-  * [NimbleOptions](https://github.com/dashbitco/nimble_options) - tiny library for validating and documenting high-level options
+  * [NimbleOptionsVendored](https://github.com/dashbitco/nimble_options_vendored) - tiny library for validating and documenting high-level options
   * [NimbleParsec](https://github.com/dashbitco/nimble_parsec) - simple and fast parser combinators
   * [NimblePool](https://github.com/dashbitco/nimble_pool) - tiny resource-pool implementation
 

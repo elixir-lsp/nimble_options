@@ -1,4 +1,4 @@
-defmodule NimbleOptions do
+defmodule NimbleOptionsVendored do
   @options_schema [
     *: [
       type: :keyword_list,
@@ -55,7 +55,7 @@ defmodule NimbleOptions do
   @moduledoc """
   Provides a standard API to handle keyword-list-based options.
 
-  `NimbleOptions` allows developers to create schemas using a
+  `NimbleOptionsVendored` allows developers to create schemas using a
   pre-defined set of options and types. The main benefits are:
 
     * A single unified way to define simple static options
@@ -67,7 +67,7 @@ defmodule NimbleOptions do
   These are the options supported in a *schema*. They are what
   defines the validation for the items in the given schema.
 
-  #{NimbleOptions.Docs.generate(@options_schema)}
+  #{NimbleOptionsVendored.Docs.generate(@options_schema)}
 
   ## Types
 
@@ -129,13 +129,13 @@ defmodule NimbleOptions do
       ...>   ]
       ...> ]
       ...>
-      ...> {:error, %NimbleOptions.ValidationError{} = error} = NimbleOptions.validate(config, schema)
+      ...> {:error, %NimbleOptionsVendored.ValidationError{} = error} = NimbleOptionsVendored.validate(config, schema)
       ...> Exception.message(error)
       "required option :module not found, received options: [:concurrency] (in options [:producer])"
 
   ## Nested option items
 
-  `NimbleOptions` allows option items to be nested so you can recursively validate
+  `NimbleOptionsVendored` allows option items to be nested so you can recursively validate
   any item down the options tree.
 
   ### Example
@@ -163,13 +163,13 @@ defmodule NimbleOptions do
       ...>   ]
       ...> ]
       ...>
-      ...> {:error, %NimbleOptions.ValidationError{} = error} = NimbleOptions.validate(config, schema)
+      ...> {:error, %NimbleOptionsVendored.ValidationError{} = error} = NimbleOptionsVendored.validate(config, schema)
       ...> Exception.message(error)
       "expected :interval to be a positive integer, got: :oops! (in options [:producer, :rate_limiting])"
 
   """
 
-  alias NimbleOptions.ValidationError
+  alias NimbleOptionsVendored.ValidationError
 
   @basic_types [
     :any,
@@ -197,7 +197,7 @@ defmodule NimbleOptions do
   If the validation is successful, this function returns `{:ok, validated_options}`
   where `validated_options` is a keyword list. If the validation fails, this
   function returns `{:error, validation_error}` where `validation_error` is a
-  `NimbleOptions.ValidationError` struct explaining what's wrong with the options.
+  `NimbleOptionsVendored.ValidationError` struct explaining what's wrong with the options.
   You can use `raise/1` with that struct or `Exception.message/1` to turn it into a string.
   """
   @spec validate(keyword(), schema()) ::
@@ -209,7 +209,7 @@ defmodule NimbleOptions do
 
       {:error, %ValidationError{} = error} ->
         raise ArgumentError,
-              "invalid schema given to NimbleOptions.validate/2. " <>
+              "invalid schema given to NimbleOptionsVendored.validate/2. " <>
                 "Reason: #{Exception.message(error)}"
     end
   end
@@ -218,7 +218,7 @@ defmodule NimbleOptions do
   Validates the given `options` with the given `schema` and raises if they're not valid.
 
   This function behaves exactly like `validate/2`, but returns the options directly
-  if they're valid or raises a `NimbleOptions.ValidationError` exception otherwise.
+  if they're valid or raises a `NimbleOptionsVendored.ValidationError` exception otherwise.
   """
   @spec validate!(keyword(), schema()) :: validated_options :: keyword()
   def validate!(options, schema) do
@@ -238,12 +238,12 @@ defmodule NimbleOptions do
 
   With this, you can use `docs/1` to inject documentation:
 
-      @doc "Supported options:\n#{NimbleOptions.docs(@options_schema)}"
+      @doc "Supported options:\n#{NimbleOptionsVendored.docs(@options_schema)}"
 
   """
   @spec docs(schema()) :: String.t()
   def docs(schema) when is_list(schema) do
-    NimbleOptions.Docs.generate(schema)
+    NimbleOptionsVendored.Docs.generate(schema)
   end
 
   @doc false

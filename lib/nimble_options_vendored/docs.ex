@@ -1,4 +1,4 @@
-defmodule NimbleOptions.Docs do
+defmodule NimbleOptionsVendored.Docs do
   @moduledoc false
 
   def generate(schema) when is_list(schema) do

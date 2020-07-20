@@ -1,22 +1,22 @@
-defmodule NimbleOptionsTest do
+defmodule NimbleOptionsVendoredTest do
   use ExUnit.Case, async: true
 
-  doctest NimbleOptions
+  doctest NimbleOptionsVendored
 
-  alias NimbleOptions.ValidationError
+  alias NimbleOptionsVendored.ValidationError
 
   test "known options" do
     schema = [name: [], context: []]
     opts = [name: MyProducer, context: :ok]
 
-    assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+    assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
   end
 
   test "unknown options" do
     schema = [an_option: [], other_option: []]
     opts = [an_option: 1, not_an_option1: 1, not_an_option2: 1]
 
-    assert NimbleOptions.validate(opts, schema) ==
+    assert NimbleOptionsVendored.validate(opts, schema) ==
              {:error,
               %ValidationError{
                 message:
@@ -30,7 +30,7 @@ defmodule NimbleOptionsTest do
       opts = [stages: 1]
 
       message = """
-      invalid schema given to NimbleOptions.validate/2. \
+      invalid schema given to NimbleOptionsVendored.validate/2. \
       Reason: invalid option type :foo.
 
       Available types: :any, :keyword_list, :non_empty_keyword_list, :atom, \
@@ -39,7 +39,7 @@ defmodule NimbleOptionsTest do
       """
 
       assert_raise ArgumentError, message, fn ->
-        NimbleOptions.validate(opts, schema)
+        NimbleOptionsVendored.validate(opts, schema)
       end
     end
 
@@ -60,7 +60,7 @@ defmodule NimbleOptionsTest do
       ]
 
       message = """
-      invalid schema given to NimbleOptions.validate/2. \
+      invalid schema given to NimbleOptionsVendored.validate/2. \
       Reason: \
       unknown options [:unknown_schema_option], \
       valid options are: [:type, :required, :default, :keys, \
@@ -69,7 +69,7 @@ defmodule NimbleOptionsTest do
       """
 
       assert_raise ArgumentError, message, fn ->
-        NimbleOptions.validate([], schema)
+        NimbleOptionsVendored.validate([], schema)
       end
     end
   end
@@ -77,12 +77,12 @@ defmodule NimbleOptionsTest do
   describe "default value" do
     test "is used when none is given" do
       schema = [context: [default: :ok]]
-      assert NimbleOptions.validate([], schema) == {:ok, [context: :ok]}
+      assert NimbleOptionsVendored.validate([], schema) == {:ok, [context: :ok]}
     end
 
     test "is not used when one is given" do
       schema = [context: [default: :ok]]
-      assert NimbleOptions.validate([context: :given], schema) == {:ok, [context: :given]}
+      assert NimbleOptionsVendored.validate([context: :given], schema) == {:ok, [context: :given]}
     end
   end
 
@@ -91,14 +91,14 @@ defmodule NimbleOptionsTest do
       schema = [name: [required: true, type: :atom]]
       opts = [name: MyProducer]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "when missing" do
       schema = [name: [required: true], an_option: [], other_option: []]
       opts = [an_option: 1, other_option: 2]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   message:
@@ -111,33 +111,33 @@ defmodule NimbleOptionsTest do
     test "is renamed when given" do
       schema = [context: [rename_to: :new_context], new_context: []]
 
-      assert NimbleOptions.validate([context: :ok], schema) ==
+      assert NimbleOptionsVendored.validate([context: :ok], schema) ==
                {:ok, [{:context, :ok}, {:new_context, :ok}]}
     end
 
     test "is ignored when not given" do
       schema = [context: [rename_to: :new_context], new_context: []]
-      assert NimbleOptions.validate([], schema) == {:ok, []}
+      assert NimbleOptionsVendored.validate([], schema) == {:ok, []}
     end
 
     test "is ignored with default" do
       schema = [context: [rename_to: :new_context, default: 1], new_context: []]
-      assert NimbleOptions.validate([], schema) == {:ok, [context: 1]}
+      assert NimbleOptionsVendored.validate([], schema) == {:ok, [context: 1]}
     end
   end
 
   describe "doc" do
     test "valid documentation for key" do
       schema = [context: [doc: "details", default: 1]]
-      assert NimbleOptions.validate([], schema) == {:ok, [context: 1]}
+      assert NimbleOptionsVendored.validate([], schema) == {:ok, [context: 1]}
       schema = [context: [doc: false, default: 1]]
-      assert NimbleOptions.validate([], schema) == {:ok, [context: 1]}
+      assert NimbleOptionsVendored.validate([], schema) == {:ok, [context: 1]}
     end
 
     test "invalid documentation for key" do
       assert_raise ArgumentError, ~r/expected :doc to be a string or false, got: 1/, fn ->
         schema = [context: [doc: 1, default: 1]]
-        NimbleOptions.validate([], schema)
+        NimbleOptionsVendored.validate([], schema)
       end
     end
   end
@@ -149,19 +149,19 @@ defmodule NimbleOptionsTest do
       schema = [context: [deprecated: "Use something else"]]
 
       assert capture_io(:stderr, fn ->
-               assert NimbleOptions.validate([context: :ok], schema) == {:ok, [context: :ok]}
+               assert NimbleOptionsVendored.validate([context: :ok], schema) == {:ok, [context: :ok]}
              end) =~ ":context is deprecated. Use something else"
     end
 
     test "does not warn when not given" do
       schema = [context: [deprecated: "Use something else"]]
-      assert NimbleOptions.validate([], schema) == {:ok, []}
+      assert NimbleOptionsVendored.validate([], schema) == {:ok, []}
     end
 
     test "does not warn when using default" do
       schema = [context: [deprecated: "Use something else", default: :ok]]
 
-      assert NimbleOptions.validate([], schema) == {:ok, [context: :ok]}
+      assert NimbleOptionsVendored.validate([], schema) == {:ok, [context: :ok]}
     end
   end
 
@@ -170,17 +170,17 @@ defmodule NimbleOptionsTest do
       schema = [stages: [type: :pos_integer]]
       opts = [stages: 1]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid positive integer" do
       schema = [stages: [type: :pos_integer]]
 
-      assert NimbleOptions.validate([stages: 0], schema) ==
+      assert NimbleOptionsVendored.validate([stages: 0], schema) ==
                {:error,
                 %ValidationError{message: "expected :stages to be a positive integer, got: 0"}}
 
-      assert NimbleOptions.validate([stages: :an_atom], schema) ==
+      assert NimbleOptionsVendored.validate([stages: :an_atom], schema) ==
                {:error,
                 %ValidationError{
                   message: "expected :stages to be a positive integer, got: :an_atom"
@@ -191,19 +191,19 @@ defmodule NimbleOptionsTest do
       schema = [min_demand: [type: :integer]]
       opts = [min_demand: 12]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid integer" do
       schema = [min_demand: [type: :integer]]
 
-      assert NimbleOptions.validate([min_demand: 1.5], schema) ==
+      assert NimbleOptionsVendored.validate([min_demand: 1.5], schema) ==
                {:error,
                 %ValidationError{
                   message: "expected :min_demand to be an integer, got: 1.5"
                 }}
 
-      assert NimbleOptions.validate([min_demand: :an_atom], schema) ==
+      assert NimbleOptionsVendored.validate([min_demand: :an_atom], schema) ==
                {:error,
                 %ValidationError{
                   message: "expected :min_demand to be an integer, got: :an_atom"
@@ -214,19 +214,19 @@ defmodule NimbleOptionsTest do
       schema = [min_demand: [type: :non_neg_integer]]
       opts = [min_demand: 0]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid non negative integer" do
       schema = [min_demand: [type: :non_neg_integer]]
 
-      assert NimbleOptions.validate([min_demand: -1], schema) ==
+      assert NimbleOptionsVendored.validate([min_demand: -1], schema) ==
                {:error,
                 %ValidationError{
                   message: "expected :min_demand to be a non negative integer, got: -1"
                 }}
 
-      assert NimbleOptions.validate([min_demand: :an_atom], schema) ==
+      assert NimbleOptionsVendored.validate([min_demand: :an_atom], schema) ==
                {:error,
                 %ValidationError{
                   message: "expected :min_demand to be a non negative integer, got: :an_atom"
@@ -236,26 +236,26 @@ defmodule NimbleOptionsTest do
     test "valid atom" do
       schema = [name: [type: :atom]]
       opts = [name: :an_atom]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid atom" do
       schema = [name: [type: :atom]]
 
-      assert NimbleOptions.validate([name: 1], schema) ==
+      assert NimbleOptionsVendored.validate([name: 1], schema) ==
                {:error, %ValidationError{message: "expected :name to be an atom, got: 1"}}
     end
 
     test "valid string" do
       schema = [doc: [type: :string]]
       opts = [doc: "a string"]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid string" do
       schema = [doc: [type: :string]]
 
-      assert NimbleOptions.validate([doc: :an_atom], schema) ==
+      assert NimbleOptionsVendored.validate([doc: :an_atom], schema) ==
                {:error, %ValidationError{message: "expected :doc to be an string, got: :an_atom"}}
     end
 
@@ -263,16 +263,16 @@ defmodule NimbleOptionsTest do
       schema = [required: [type: :boolean]]
 
       opts = [required: true]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [required: false]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid boolean" do
       schema = [required: [type: :boolean]]
 
-      assert NimbleOptions.validate([required: :an_atom], schema) ==
+      assert NimbleOptionsVendored.validate([required: :an_atom], schema) ==
                {:error,
                 %ValidationError{message: "expected :required to be an boolean, got: :an_atom"}}
     end
@@ -281,13 +281,13 @@ defmodule NimbleOptionsTest do
       schema = [timeout: [type: :timeout]]
 
       opts = [timeout: 0]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [timeout: 1000]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [timeout: :infinity]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid timeout" do
@@ -295,7 +295,7 @@ defmodule NimbleOptionsTest do
 
       opts = [timeout: -1]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   message: "expected :timeout to be non-negative integer or :infinity, got: -1"
@@ -303,7 +303,7 @@ defmodule NimbleOptionsTest do
 
       opts = [timeout: :invalid]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   message:
@@ -314,13 +314,13 @@ defmodule NimbleOptionsTest do
     test "valid pid" do
       schema = [name: [type: :pid]]
       opts = [name: self()]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid pid" do
       schema = [name: [type: :pid]]
 
-      assert NimbleOptions.validate([name: 1], schema) ==
+      assert NimbleOptionsVendored.validate([name: 1], schema) ==
                {:error, %ValidationError{message: "expected :name to be a pid, got: 1"}}
     end
 
@@ -328,10 +328,10 @@ defmodule NimbleOptionsTest do
       schema = [transformer: [type: :mfa]]
 
       opts = [transformer: {SomeMod, :func, [1, 2]}]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [transformer: {SomeMod, :func, []}]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid mfa" do
@@ -339,7 +339,7 @@ defmodule NimbleOptionsTest do
 
       opts = [transformer: {"not_a_module", :func, []}]
 
-      assert NimbleOptions.validate(opts, schema) == {
+      assert NimbleOptionsVendored.validate(opts, schema) == {
                :error,
                %ValidationError{
                  message:
@@ -349,7 +349,7 @@ defmodule NimbleOptionsTest do
 
       opts = [transformer: {SomeMod, "not_a_func", []}]
 
-      assert NimbleOptions.validate(opts, schema) == {
+      assert NimbleOptionsVendored.validate(opts, schema) == {
                :error,
                %ValidationError{
                  message:
@@ -359,7 +359,7 @@ defmodule NimbleOptionsTest do
 
       opts = [transformer: {SomeMod, :func, "not_a_list"}]
 
-      assert NimbleOptions.validate(opts, schema) == {
+      assert NimbleOptionsVendored.validate(opts, schema) == {
                :error,
                %ValidationError{
                  message:
@@ -369,7 +369,7 @@ defmodule NimbleOptionsTest do
 
       opts = [transformer: NotATuple]
 
-      assert NimbleOptions.validate(opts, schema) == {
+      assert NimbleOptionsVendored.validate(opts, schema) == {
                :error,
                %ValidationError{
                  message: ~s(expected :transformer to be a tuple {Mod, Fun, Args}, got: NotATuple)
@@ -381,10 +381,10 @@ defmodule NimbleOptionsTest do
       schema = [producer: [type: :mod_arg]]
 
       opts = [producer: {SomeMod, [1, 2]}]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [producer: {SomeMod, []}]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid mod_arg" do
@@ -392,7 +392,7 @@ defmodule NimbleOptionsTest do
 
       opts = [producer: NotATuple]
 
-      assert NimbleOptions.validate(opts, schema) == {
+      assert NimbleOptionsVendored.validate(opts, schema) == {
                :error,
                %ValidationError{
                  message: ~s(expected :producer to be a tuple {Mod, Arg}, got: NotATuple)
@@ -401,7 +401,7 @@ defmodule NimbleOptionsTest do
 
       opts = [producer: {"not_a_module", []}]
 
-      assert NimbleOptions.validate(opts, schema) == {
+      assert NimbleOptionsVendored.validate(opts, schema) == {
                :error,
                %ValidationError{
                  message:
@@ -414,10 +414,10 @@ defmodule NimbleOptionsTest do
       schema = [partition_by: [type: {:fun, 1}]]
 
       opts = [partition_by: fn x -> x end]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [partition_by: &:erlang.phash2/1]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid {:fun, arity}" do
@@ -425,7 +425,7 @@ defmodule NimbleOptionsTest do
 
       opts = [partition_by: :not_a_fun]
 
-      assert NimbleOptions.validate(opts, schema) == {
+      assert NimbleOptionsVendored.validate(opts, schema) == {
                :error,
                %ValidationError{
                  message: ~s(expected :partition_by to be a function of arity 1, got: :not_a_fun)
@@ -434,7 +434,7 @@ defmodule NimbleOptionsTest do
 
       opts = [partition_by: fn x, y -> x * y end]
 
-      assert NimbleOptions.validate(opts, schema) == {
+      assert NimbleOptionsVendored.validate(opts, schema) == {
                :error,
                %ValidationError{
                  message:
@@ -447,10 +447,10 @@ defmodule NimbleOptionsTest do
       schema = [batch_mode: [type: {:one_of, [:flush, :bulk]}]]
 
       opts = [batch_mode: :flush]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [batch_mode: :bulk]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "invalid {:one_of, choices}" do
@@ -458,7 +458,7 @@ defmodule NimbleOptionsTest do
 
       opts = [batch_mode: :invalid]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   message: "expected :batch_mode to be one of [:flush, :bulk], got: :invalid"
@@ -469,14 +469,14 @@ defmodule NimbleOptionsTest do
       schema = [buffer_keep: [type: {:custom, __MODULE__, :buffer_keep, []}]]
 
       opts = [buffer_keep: :first]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [buffer_keep: :last]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [buffer_keep: :unknown]
 
-      assert NimbleOptions.validate(opts, schema) == {
+      assert NimbleOptionsVendored.validate(opts, schema) == {
                :error,
                %ValidationError{message: ~s(expected :first or :last, got: :unknown)}
              }
@@ -486,14 +486,14 @@ defmodule NimbleOptionsTest do
       schema = [buffer_keep: [type: {:custom, __MODULE__, :choice, [[:first, :last]]}]]
 
       opts = [buffer_keep: :first]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [buffer_keep: :last]
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
 
       opts = [buffer_keep: :unknown]
 
-      assert NimbleOptions.validate(opts, schema) == {
+      assert NimbleOptionsVendored.validate(opts, schema) == {
                :error,
                %ValidationError{message: ~s(expected one of [:first, :last], got: :unknown)}
              }
@@ -503,7 +503,7 @@ defmodule NimbleOptionsTest do
       schema = [connections: [type: {:custom, __MODULE__, :string_to_integer, []}]]
 
       opts = [connections: "5"]
-      assert {:ok, validated_opts} = NimbleOptions.validate(opts, schema)
+      assert {:ok, validated_opts} = NimbleOptionsVendored.validate(opts, schema)
       assert length(validated_opts) == 1
       assert validated_opts[:connections] == 5
     end
@@ -523,7 +523,7 @@ defmodule NimbleOptionsTest do
 
       opts = [processors: [stages: 1, max_demand: 2]]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "unknown options" do
@@ -545,7 +545,7 @@ defmodule NimbleOptionsTest do
         ]
       ]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   keys_path: [:processors],
@@ -566,7 +566,7 @@ defmodule NimbleOptionsTest do
 
       opts = [processors: []]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, [processors: [stages: 10]]}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, [processors: [stages: 10]]}
     end
 
     test "all required options present" do
@@ -582,7 +582,7 @@ defmodule NimbleOptionsTest do
 
       opts = [processors: [stages: 1, max_demand: 2]]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "required options missing" do
@@ -598,7 +598,7 @@ defmodule NimbleOptionsTest do
 
       opts = [processors: [max_demand: 1]]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   keys_path: [:processors],
@@ -619,7 +619,7 @@ defmodule NimbleOptionsTest do
 
       opts = [processors: [name: MyModule, stages: :an_atom]]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   keys_path: [:processors],
@@ -647,7 +647,7 @@ defmodule NimbleOptionsTest do
 
       opts = [producers: [producer1: [module: MyModule, arg: :atom]]]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "unknown options" do
@@ -668,7 +668,7 @@ defmodule NimbleOptionsTest do
 
       opts = [producers: [producer1: [module: MyModule, arg: :ok, unknown_option: 1]]]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   keys_path: [:producers, :producer1],
@@ -693,7 +693,7 @@ defmodule NimbleOptionsTest do
 
       opts = [producers: [producer1: []]]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, [producers: [producer1: [arg: :ok]]]}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, [producers: [producer1: [arg: :ok]]]}
     end
 
     test "all required options present" do
@@ -714,7 +714,7 @@ defmodule NimbleOptionsTest do
 
       opts = [producers: [default: [module: MyModule, arg: :ok]]]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "required options missing" do
@@ -735,7 +735,7 @@ defmodule NimbleOptionsTest do
 
       opts = [producers: [default: [module: MyModule]]]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   keys_path: [:producers, :default],
@@ -768,7 +768,7 @@ defmodule NimbleOptionsTest do
         ]
       ]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   keys_path: [:producers, :producer1],
@@ -796,7 +796,7 @@ defmodule NimbleOptionsTest do
         producers: []
       ]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   message: "expected :producers to be a non-empty keyword list, got: []"
@@ -823,7 +823,7 @@ defmodule NimbleOptionsTest do
         producers: []
       ]
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, opts}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, opts}
     end
 
     test "default value for :keyword_list" do
@@ -845,7 +845,7 @@ defmodule NimbleOptionsTest do
 
       opts = []
 
-      assert NimbleOptions.validate(opts, schema) == {:ok, [batchers: []]}
+      assert NimbleOptionsVendored.validate(opts, schema) == {:ok, [batchers: []]}
     end
   end
 
@@ -867,7 +867,7 @@ defmodule NimbleOptionsTest do
 
       opts = [socket_options: [certificates: [path: :not_a_string]]]
 
-      assert NimbleOptions.validate(opts, schema) ==
+      assert NimbleOptionsVendored.validate(opts, schema) ==
                {:error,
                 %ValidationError{
                   keys_path: [:socket_options, :certificates],
@@ -889,7 +889,7 @@ defmodule NimbleOptionsTest do
 
       """
 
-      assert NimbleOptions.docs(recursive_schema()) == docs
+      assert NimbleOptionsVendored.docs(recursive_schema()) == docs
     end
 
     test "generate inline indented docs for nested options" do
@@ -926,7 +926,7 @@ defmodule NimbleOptionsTest do
 
       """
 
-      assert NimbleOptions.docs(schema) == docs
+      assert NimbleOptionsVendored.docs(schema) == docs
     end
 
     test "generate subsections for nested options" do
@@ -966,7 +966,7 @@ defmodule NimbleOptionsTest do
 
       """
 
-      assert NimbleOptions.docs(schema) == docs
+      assert NimbleOptionsVendored.docs(schema) == docs
     end
 
     test "keep indentation of multiline doc" do
@@ -998,7 +998,7 @@ defmodule NimbleOptionsTest do
 
       """
 
-      assert NimbleOptions.docs(schema) == docs
+      assert NimbleOptionsVendored.docs(schema) == docs
     end
 
     test "the option doesn't appear in the documentation when the :doc option is false" do
@@ -1015,7 +1015,7 @@ defmodule NimbleOptionsTest do
 
       """
 
-      assert NimbleOptions.docs(schema) == docs
+      assert NimbleOptionsVendored.docs(schema) == docs
     end
 
     test "the option and its children don't appear in the documentation when the :doc option is false" do
@@ -1033,7 +1033,7 @@ defmodule NimbleOptionsTest do
       docs = """
       """
 
-      assert NimbleOptions.docs(schema) == docs
+      assert NimbleOptionsVendored.docs(schema) == docs
     end
   end
 
@@ -1042,18 +1042,18 @@ defmodule NimbleOptionsTest do
       schema = [name: [], context: []]
       opts = [name: MyProducer, context: :ok]
 
-      assert NimbleOptions.validate!(opts, schema) == opts
+      assert NimbleOptionsVendored.validate!(opts, schema) == opts
     end
 
-    test "raises a NimbleOptions.ValidationError if the options are invalid" do
+    test "raises a NimbleOptionsVendored.ValidationError if the options are invalid" do
       schema = [an_option: [], other_option: []]
       opts = [an_option: 1, not_an_option1: 1, not_an_option2: 1]
 
       message =
         "unknown options [:not_an_option1, :not_an_option2], valid options are: [:an_option, :other_option]"
 
-      assert_raise NimbleOptions.ValidationError, message, fn ->
-        NimbleOptions.validate!(opts, schema)
+      assert_raise NimbleOptionsVendored.ValidationError, message, fn ->
+        NimbleOptionsVendored.validate!(opts, schema)
       end
     end
   end

@@ -1,12 +1,12 @@
-defmodule NimbleOptions.MixProject do
+defmodule NimbleOptionsVendored.MixProject do
   use Mix.Project
 
   @version "0.3.0"
-  @repo_url "https://github.com/dashbitco/nimble_options"
+  @repo_url "https://github.com/dashbitco/nimble_options_vendored"
 
   def project do
     [
-      app: :nimble_options,
+      app: :nimble_options_vendored,
       version: @version,
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
@@ -17,7 +17,7 @@ defmodule NimbleOptions.MixProject do
       description: "A tiny library for validating and documenting high-level options",
 
       # Docs
-      name: "NimbleOptions",
+      name: "NimbleOptionsVendored",
       docs: docs()
     ]
   end
@@ -46,7 +46,7 @@ defmodule NimbleOptions.MixProject do
 
   defp docs do
     [
-      main: "NimbleOptions",
+      main: "NimbleOptionsVendored",
       source_ref: "v#{@version}",
       source_url: @repo_url
     ]
